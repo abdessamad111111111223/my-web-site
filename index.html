@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visited Places</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Visited Places</h1>
+            <button id="addPlaceBtn">Add Place</button>
+        </header>
+
+        <main id="placesContainer">
+            <p>No places added yet.</p>
+        </main>
+
+        <!-- Modal for Adding Places -->
+        <div id="addPlaceModal" class="modal hidden">
+            <div class="modal-content">
+                <h2>Add a Place</h2>
+                <form id="addPlaceForm">
+                    <label for="placeName">Place Name:</label>
+                    <input type="text" id="placeName" required>
+
+                    <label for="placeDescription">Description:</label>
+                    <textarea id="placeDescription" required></textarea>
+
+                    <label for="placeAlert">Alert:</label>
+                    <textarea id="placeAlert"></textarea>
+
+                    <label for="placeLink">Place Link:</label>
+                    <input type="url" id="placeLink">
+
+                    <label for="placeImages">Upload Images (max 10):</label>
+                    <input type="file" id="placeImages" multiple accept="image/*">
+
+                    <button type="submit">Save Place</button>
+                    <button type="button" id="cancelBtn">Cancel</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="scripts.js"></script>
+</body>
+</html>
