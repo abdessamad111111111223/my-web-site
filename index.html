@@ -1,49 +1,1088 @@
 <!DOCTYPE html>
-<html lang="en">
+<html dir="rtl" lang="ar">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visited Places</title>
-    <link rel="stylesheet" href="style.css">
+    <title>دليل الأماكن المزارة - تسجيل الدخول</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .country-card, .city-card, .place-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .country-card:hover, .city-card:hover {
+            transform: translateY(-5px);
+            cursor: pointer;
+        }
+
+        .country-image, .city-image {
+            height: 200px;
+            width: 100%;
+            object-fit: cover;
+        }
+
+        .card-info {
+            padding: 20px;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .add-button {
+            background-color: #28a745;
+            border: none;
+            border-radius: 50%;
+            bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            color: white;
+            font-size: 24px;
+            height: 60px;
+            position: fixed;
+            right: 30px;
+            transition: transform 0.3s ease;
+            width: 60px;
+            z-index: 1000;
+        }
+
+        .add-button:hover {
+            transform: scale(1.1);
+        }
+
+        .breadcrumb {
+            background-color: white;
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+        }
+
+        .place-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        .place-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .carousel-inner {
+            border-radius: 15px 15px 0 0;
+            height: 300px;
+        }
+
+        .carousel-item img {
+            height: 300px;
+            object-fit: cover;
+            width: 100%;
+        }
+
+        .place-info {
+            padding: 20px;
+        }
+
+        .place-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .place-description {
+            color: #6c757d;
+            margin-bottom: 15px;
+        }
+
+        .place-alert {
+            background-color: #fff3cd;
+            border-radius: 8px;
+            color: #856404;
+            margin-bottom: 15px;
+            padding: 10px;
+        }
+
+        .price-tag {
+            background-color: #28a745;
+            border-radius: 20px;
+            color: white;
+            display: inline-block;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            padding: 5px 15px;
+        }
+
+        .price-tag.paid {
+            background-color: #dc3545;
+        }
+
+        .map-button {
+            background-color: #007bff;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+
+        .map-button:hover {
+            background-color: #0056b3;
+            color: white;
+        }
+
+        .image-preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .image-preview {
+            border-radius: 8px;
+            height: 100px;
+            object-fit: cover;
+            width: 100px;
+        }
+
+        .required-field::after {
+            color: red;
+            content: " *";
+        }
+
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            background-color: #f8f9fa;
+        }
+        .auth-card {
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            border-radius: 15px;
+            background-color: white;
+        }
+        .main-content {
+            display: none;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Visited Places</h1>
-            <button id="addPlaceBtn">Add Place</button>
-        </header>
+    <!-- قسم المصادقة -->
+    <div class="auth-container">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="auth-card card">
+                        <div class="card-body p-4">
+                            <!-- نموذج تسجيل الدخول -->
+                            <div id="loginForm">
+                                <h2 class="text-center mb-4">تسجيل الدخول</h2>
+                                <div class="mb-3">
+                                    <input type="email" id="email" class="form-control" placeholder="البريد الإلكتروني" required>
+                                </div>
+                                <div class="mb-3">
+                                    <input type="password" id="password" class="form-control" placeholder="كلمة المرور" required>
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-primary" onclick="login()">تسجيل الدخول</button>
+                                    <button class="btn btn-outline-primary" onclick="showRegisterForm()">إنشاء حساب جديد</button>
+                                    <button class="btn btn-link" onclick="showResetPasswordForm()">نسيت كلمة المرور؟</button>
+                                </div>
+                            </div>
 
-        <main id="placesContainer">
-            <p>No places added yet.</p>
-        </main>
+                            <!-- نموذج إنشاء حساب -->
+                            <div id="registerForm" style="display: none;">
+                                <h2 class="text-center mb-4">إنشاء حساب جديد</h2>
+                                <div class="mb-3">
+                                    <input type="text" id="registerName" class="form-control" placeholder="الاسم" required>
+                                </div>
+                                <div class="mb-3">
+                                    <input type="email" id="registerEmail" class="form-control" placeholder="البريد الإلكتروني" required>
+                                </div>
+                                <div class="mb-3">
+                                    <input type="password" id="registerPassword" class="form-control" placeholder="كلمة المرور" required>
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-success" onclick="register()">إنشاء الحساب</button>
+                                    <button class="btn btn-outline-secondary" onclick="showLoginForm()">العودة لتسجيل الدخول</button>
+                                </div>
+                            </div>
 
-        <!-- Modal for Adding Places -->
-        <div id="addPlaceModal" class="modal hidden">
-            <div class="modal-content">
-                <h2>Add a Place</h2>
-                <form id="addPlaceForm">
-                    <label for="placeName">Place Name:</label>
-                    <input type="text" id="placeName" required>
-
-                    <label for="placeDescription">Description:</label>
-                    <textarea id="placeDescription" required></textarea>
-
-                    <label for="placeAlert">Alert:</label>
-                    <textarea id="placeAlert"></textarea>
-
-                    <label for="placeLink">Place Link:</label>
-                    <input type="url" id="placeLink">
-
-                    <label for="placeImages">Upload Images (max 10):</label>
-                    <input type="file" id="placeImages" multiple accept="image/*">
-
-                    <button type="submit">Save Place</button>
-                    <button type="button" id="cancelBtn">Cancel</button>
-                </form>
+                            <!-- نموذج إعادة تعيين كلمة المرور -->
+                            <div id="resetPasswordForm" style="display: none;">
+                                <h2 class="text-center mb-4">إعادة تعيين كلمة المرور</h2>
+                                <div class="mb-3">
+                                    <input type="email" id="resetEmail" class="form-control" placeholder="البريد الإلكتروني" required>
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <button class="btn btn-warning" onclick="resetPassword()">إرسال رابط إعادة التعيين</button>
+                                    <button class="btn btn-outline-secondary" onclick="showLoginForm()">العودة لتسجيل الدخول</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <script src="scripts.js"></script>
+    <!-- المحتوى الرئيسي -->
+    <div class="main-content">
+        <div class="container py-5">
+            <!-- قسم تسجيل الدخول -->
+            <div class="text-center mb-4">
+                <div id="userSection" class="mb-3">
+                    <div id="userInfo" class="d-none">
+                        <p>مرحباً <span id="currentUsername"></span></p>
+                        <button class="btn btn-outline-danger" onclick="logout()">تسجيل الخروج</button>
+                        <button class="btn btn-link" onclick="showProfileModal()">الملف الشخصي</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- شريط التنقل -->
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb" id="navigationPath">
+                    <li class="breadcrumb-item active">الدول</li>
+                </ol>
+            </nav>
+
+            <!-- حاوية المحتوى -->
+            <div id="mainContainer" class="row">
+                <!-- سيتم إضافة المحتوى هنا -->
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة الملف الشخصي -->
+    <div class="modal fade" id="profileModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">الملف الشخصي</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-4">
+                        <div class="position-relative d-inline-block">
+                            <img id="profileImage" src="https://www.gravatar.com/avatar/?d=mp" class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                            <label for="profileImageInput" class="position-absolute bottom-0 end-0 bg-primary text-white rounded-circle p-2" style="cursor: pointer;">
+                                <i class="bi bi-camera-fill"></i>
+                                <input type="file" id="profileImageInput" accept="image/*" style="display: none;" onchange="handleProfileImageChange(event)">
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">الاسم</label>
+                        <input type="text" id="profileName" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">البريد الإلكتروني</label>
+                        <input type="email" id="profileEmail" class="form-control" readonly>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-primary" onclick="updateProfile()">حفظ التغييرات</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة إضافة دولة -->
+    <div class="modal fade" id="addCountryModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">إضافة دولة جديدة</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label required">اسم الدولة</label>
+                        <input type="text" id="countryName" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">صورة الدولة</label>
+                        <input type="text" id="countryImage" class="form-control" placeholder="رابط الصورة">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-primary" onclick="addCountry()">إضافة</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة إضافة مدينة -->
+    <div class="modal fade" id="addCityModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">إضافة مدينة جديدة</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label required">اسم المدينة</label>
+                        <input type="text" id="cityName" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">صورة المدينة</label>
+                        <input type="text" id="cityImage" class="form-control" placeholder="رابط الصورة">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-primary" onclick="addCity()">إضافة</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة إضافة مكان -->
+    <div class="modal fade" id="addPlaceModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">إضافة مكان جديد</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label required">اسم المكان</label>
+                        <input type="text" id="placeName" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">صورة المكان</label>
+                        <input type="text" id="placeImage" class="form-control" placeholder="رابط الصورة">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">تاريخ الزيارة</label>
+                        <input type="date" id="placeDate" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">ملاحظات</label>
+                        <textarea id="placeNotes" class="form-control" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-primary" onclick="addPlace()">إضافة</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- إضافة مكتبات Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-analytics-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // تهيئة Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyC1rqYI4AQk4bm6cDtYz-BGaYY_BUz4dgk",
+            authDomain: "travel-guide-b6336.firebaseapp.com",
+            projectId: "travel-guide-b6336",
+            storageBucket: "travel-guide-b6336.appspot.com",
+            messagingSenderId: "950432400781",
+            appId: "1:950432400781:web:41a4730393f15f36e5d310",
+            measurementId: "G-RVYG8VHE9D"
+        };
+
+        // تهيئة Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const storage = firebase.storage();
+        const analytics = firebase.analytics();
+
+        let profileImageFile = null;
+
+        // التحقق من حالة تسجيل الدخول
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                currentUser = {
+                    uid: user.uid,
+                    email: user.email,
+                    displayName: user.displayName || user.email,
+                    photoURL: user.photoURL || 'https://www.gravatar.com/avatar/?d=mp'
+                };
+                // تحديث معلومات المستخدم في الواجهة
+                document.getElementById('headerUsername').textContent = currentUser.displayName;
+                document.getElementById('headerUserAvatar').src = currentUser.photoURL;
+                showMainContent();
+                loadData();
+            } else {
+                currentUser = null;
+                hideMainContent();
+                showLoginForm();
+            }
+        });
+
+        // تسجيل الدخول
+        async function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if (!email || !password) {
+                alert('الرجاء إدخال البريد الإلكتروني وكلمة المرور');
+                return;
+            }
+
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+                // سيتم التعامل مع نجاح تسجيل الدخول في onAuthStateChanged
+            } catch (error) {
+                console.error('خطأ في تسجيل الدخول:', error);
+                let errorMessage = 'خطأ في تسجيل الدخول';
+                switch (error.code) {
+                    case 'auth/user-not-found':
+                        errorMessage = 'البريد الإلكتروني غير مسجل';
+                        break;
+                    case 'auth/wrong-password':
+                        errorMessage = 'كلمة المرور غير صحيحة';
+                        break;
+                    case 'auth/invalid-email':
+                        errorMessage = 'البريد الإلكتروني غير صالح';
+                        break;
+                }
+                alert(errorMessage);
+            }
+        }
+
+        // إنشاء حساب جديد
+        async function register() {
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+
+            if (!name || !email || !password) {
+                alert('الرجاء ملء جميع الحقول المطلوبة');
+                return;
+            }
+
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                await userCredential.user.updateProfile({
+                    displayName: name
+                });
+                // سيتم التعامل مع نجاح التسجيل في onAuthStateChanged
+            } catch (error) {
+                console.error('خطأ في إنشاء الحساب:', error);
+                let errorMessage = 'خطأ في إنشاء الحساب';
+                switch (error.code) {
+                    case 'auth/email-already-in-use':
+                        errorMessage = 'البريد الإلكتروني مستخدم بالفعل';
+                        break;
+                    case 'auth/invalid-email':
+                        errorMessage = 'البريد الإلكتروني غير صالح';
+                        break;
+                    case 'auth/weak-password':
+                        errorMessage = 'كلمة المرور ضعيفة جداً';
+                        break;
+                }
+                alert(errorMessage);
+            }
+        }
+
+        // إعادة تعيين كلمة المرور
+        async function resetPassword() {
+            const email = document.getElementById('resetEmail').value;
+
+            if (!email) {
+                alert('الرجاء إدخال البريد الإلكتروني');
+                return;
+            }
+
+            try {
+                await auth.sendPasswordResetEmail(email);
+                alert('تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني');
+                showLoginForm();
+            } catch (error) {
+                console.error('خطأ في إعادة تعيين كلمة المرور:', error);
+                let errorMessage = 'خطأ في إعادة تعيين كلمة المرور';
+                switch (error.code) {
+                    case 'auth/user-not-found':
+                        errorMessage = 'البريد الإلكتروني غير مسجل';
+                        break;
+                    case 'auth/invalid-email':
+                        errorMessage = 'البريد الإلكتروني غير صالح';
+                        break;
+                }
+                alert(errorMessage);
+            }
+        }
+
+        // تسجيل الخروج
+        async function logout() {
+            try {
+                await auth.signOut();
+                // سيتم التعامل مع تسجيل الخروج في onAuthStateChanged
+            } catch (error) {
+                console.error('خطأ في تسجيل الخروج:', error);
+                alert('خطأ في تسجيل الخروج');
+            }
+        }
+
+        // إظهار/إخفاء المحتوى الرئيسي
+        function showMainContent() {
+            document.querySelector('.auth-container').style.display = 'none';
+            document.querySelector('.main-content').style.display = 'block';
+        }
+
+        function hideMainContent() {
+            document.querySelector('.auth-container').style.display = 'flex';
+            document.querySelector('.main-content').style.display = 'none';
+        }
+
+        // إظهار نموذج تسجيل الدخول
+        function showLoginForm() {
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('resetPasswordForm').style.display = 'none';
+        }
+
+        // إظهار نموذج إنشاء الحساب
+        function showRegisterForm() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+            document.getElementById('resetPasswordForm').style.display = 'none';
+        }
+
+        // إظهار نموذج إعادة تعيين كلمة المرور
+        function showResetPasswordForm() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('resetPasswordForm').style.display = 'block';
+        }
+
+        let currentUser = null;
+        let currentCountry = null;
+        let currentCity = null;
+        let countries = [];
+        let places = [];
+
+        // تحميل البيانات
+        function loadData() {
+            initializeDefaultData(); // إضافة البيانات الافتراضية إذا لم تكن موجودة
+            countries = JSON.parse(localStorage.getItem('countries')) || [];
+            places = JSON.parse(localStorage.getItem('places')) || [];
+            displayContent();
+        }
+
+        // حفظ البيانات
+        function saveData() {
+            localStorage.setItem('countries', JSON.stringify(countries));
+            localStorage.setItem('places', JSON.stringify(places));
+        }
+
+        // عرض المحتوى حسب المستوى الحالي
+        function displayContent() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = '';
+            updateNavigation();
+
+            if (!currentCountry) {
+                displayCountries();
+            } else if (!currentCity) {
+                displayCities(currentCountry);
+            } else {
+                displayPlaces(currentCity);
+            }
+
+            updateAddButton();
+        }
+
+        // تحديث زر الإضافة
+        function updateAddButton() {
+            const existingButton = document.querySelector('.add-button');
+            if (existingButton) {
+                existingButton.remove();
+            }
+
+            const button = document.createElement('button');
+            button.className = 'add-button';
+            button.innerHTML = '<i class="bi bi-plus"></i>';
+
+            if (!currentCountry) {
+                button.setAttribute('data-bs-toggle', 'modal');
+                button.setAttribute('data-bs-target', '#addCountryModal');
+            } else if (!currentCity) {
+                button.setAttribute('data-bs-toggle', 'modal');
+                button.setAttribute('data-bs-target', '#addCityModal');
+            } else {
+                button.setAttribute('data-bs-toggle', 'modal');
+                button.setAttribute('data-bs-target', '#addPlaceModal');
+            }
+
+            document.body.appendChild(button);
+        }
+
+        // تحديث شريط التنقل
+        function updateNavigation() {
+            const nav = document.getElementById('navigationPath');
+            nav.innerHTML = '<li class="breadcrumb-item"><a href="#" onclick="navigateToHome()">الدول</a></li>';
+
+            if (currentCountry) {
+                nav.innerHTML += `<li class="breadcrumb-item ${!currentCity ? 'active' : ''}">
+                    ${!currentCity ? currentCountry.name : 
+                    `<a href="#" onclick="navigateToCountry('${currentCountry.id}')">${currentCountry.name}</a>`}
+                </li>`;
+            }
+
+            if (currentCity) {
+                nav.innerHTML += `<li class="breadcrumb-item active">${currentCity.name}</li>`;
+            }
+        }
+
+        // عرض الدول
+        function displayCountries() {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = '';
+            
+            if (countries.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12 text-center">
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i>
+                            لا توجد دول مضافة حالياً. اضغط على زر + في الأسفل لإضافة دولة جديدة
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            countries.forEach(country => {
+                const countryElement = document.createElement('div');
+                countryElement.className = 'col-md-4 mb-4';
+                countryElement.innerHTML = `
+                    <div class="country-card" onclick="navigateToCountry('${country.id}')">
+                        <img src="${country.image}" class="country-image" alt="${country.name}">
+                        <div class="card-info">
+                            <h3 class="card-title">${country.name}</h3>
+                            <p class="text-muted">عدد المدن: ${country.cities.length}</p>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(countryElement);
+            });
+        }
+
+        // عرض المدن
+        function displayCities(country) {
+            const container = document.getElementById('mainContainer');
+            container.innerHTML = '';
+            
+            if (country.cities.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12 text-center">
+                        <div class="alert alert-info">
+                            <i class="bi bi-info-circle"></i>
+                            لا توجد مدن مضافة في ${country.name}. اضغط على زر + في الأسفل لإضافة مدينة جديدة
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            country.cities.forEach(city => {
+                const cityElement = document.createElement('div');
+                cityElement.className = 'col-md-4 mb-4';
+                cityElement.innerHTML = `
+                    <div class="city-card" onclick="navigateToCity('${city.id}')">
+                        <img src="${city.image}" class="city-image" alt="${city.name}">
+                        <div class="card-info">
+                            <h3 class="card-title">${city.name}</h3>
+                            <p class="text-muted">عدد الأماكن: ${places.filter(p => p.cityId === city.id).length}</p>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(cityElement);
+            });
+        }
+
+        // التنقل
+        function navigateToHome() {
+            currentCountry = null;
+            currentCity = null;
+            displayContent();
+        }
+
+        function navigateToCountry(countryId) {
+            currentCountry = countries.find(c => c.id === countryId);
+            currentCity = null;
+            displayContent();
+        }
+
+        function navigateToCity(cityId) {
+            currentCity = currentCountry.cities.find(c => c.id === cityId);
+            displayContent();
+        }
+
+        // إضافة دولة جديدة
+        async function addCountry() {
+            const nameInput = document.getElementById('countryName');
+            const imageInput = document.getElementById('countryImage');
+
+            if (!nameInput.value || !imageInput.value) {
+                alert('الرجاء ملء جميع الحقول المطلوبة');
+                return;
+            }
+
+            const country = {
+                id: Date.now().toString(),
+                name: nameInput.value,
+                image: imageInput.value,
+                cities: []
+            };
+
+            countries.push(country);
+            saveData();
+            displayContent();
+
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addCountryModal'));
+            modal.hide();
+            document.getElementById('addCountryModal').reset();
+        }
+
+        // إضافة مدينة جديدة
+        async function addCity() {
+            const nameInput = document.getElementById('cityName');
+            const imageInput = document.getElementById('cityImage');
+
+            if (!nameInput.value || !imageInput.value) {
+                alert('الرجاء ملء جميع الحقول المطلوبة');
+                return;
+            }
+
+            const city = {
+                id: Date.now().toString(),
+                name: nameInput.value,
+                image: imageInput.value
+            };
+
+            currentCountry.cities.push(city);
+            saveData();
+            displayContent();
+
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addCityModal'));
+            modal.hide();
+            document.getElementById('addCityModal').reset();
+        }
+
+        // إضافة مكان جديد
+        async function addPlace() {
+            try {
+                if (!currentUser || !currentCity) {
+                    alert('الرجاء تسجيل الدخول واختيار مدينة أولاً');
+                    return;
+                }
+
+                const form = document.getElementById('addPlaceModal');
+                
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+
+                const place = {
+                    id: Date.now(),
+                    user: currentUser,
+                    cityId: currentCity.id,
+                    name: document.getElementById('placeName').value,
+                    image: document.getElementById('placeImage').value,
+                    date: document.getElementById('placeDate').value,
+                    notes: document.getElementById('placeNotes').value,
+                    createdAt: new Date().toISOString()
+                };
+
+                places.push(place);
+                saveData();
+                
+                displayContent();
+                const modal = bootstrap.Modal.getInstance(document.getElementById('addPlaceModal'));
+                modal.hide();
+                form.reset();
+                alert('تم إضافة المكان بنجاح!');
+            } catch (error) {
+                console.error('Error adding place:', error);
+                alert('حدث خطأ أثناء إضافة المكان');
+            }
+        }
+
+        // عرض الأماكن
+        function displayPlaces() {
+            const container = document.getElementById('mainContainer');
+            const cityPlaces = places.filter(p => p.cityId === currentCity.id);
+
+            if (cityPlaces.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12 text-center">
+                        <p class="text-muted">لا توجد أماكن مضافة في هذه المدينة</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // ترتيب الأماكن حسب تاريخ الإضافة (الأحدث أولاً)
+            const sortedPlaces = [...cityPlaces].sort((a, b) => 
+                new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
+            );
+
+            sortedPlaces.forEach(place => {
+                const placeElement = document.createElement('div');
+                placeElement.className = 'col-md-6 col-lg-4 mb-4';
+                
+                const isOwner = currentUser && place.user === currentUser;
+                const actionButtons = isOwner ? `
+                    <div class="place-actions mt-2">
+                        <button class="btn btn-sm btn-primary" onclick="loadPlaceForEdit(${place.id})">
+                            <i class="bi bi-pencil"></i> تعديل
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="deletePlace(${place.id})">
+                            <i class="bi bi-trash"></i> حذف
+                        </button>
+                    </div>
+                ` : '';
+
+                placeElement.innerHTML = `
+                    <div class="place-card">
+                        <img src="${place.image}" class="place-image" alt="${place.name}">
+                        <div class="place-info">
+                            <h3 class="place-title">${place.name}</h3>
+                            <p class="place-description">${place.notes}</p>
+                            <p class="place-date">${place.date}</p>
+                            <div class="place-user mt-2">
+                                <small class="text-muted">تمت الإضافة بواسطة: ${place.user}</small>
+                                ${place.createdAt ? `<br><small class="text-muted">تاريخ الإضافة: ${new Date(place.createdAt).toLocaleDateString()}</small>` : ''}
+                            </div>
+                            ${actionButtons}
+                        </div>
+                    </div>
+                `;
+                container.appendChild(placeElement);
+            });
+        }
+
+        // حذف مكان
+        function deletePlace(placeId) {
+            const place = places.find(p => p.id === placeId);
+            if (!place || place.user !== currentUser) {
+                alert('لا يمكنك حذف هذا المكان');
+                return;
+            }
+
+            if (confirm('هل أنت متأكد من حذف هذا المكان؟')) {
+                places = places.filter(p => p.id !== placeId);
+                saveData();
+                displayContent();
+                alert('تم حذف المكان بنجاح');
+            }
+        }
+
+        // إظهار نافذة الملف الشخصي
+        function showProfileModal() {
+            document.getElementById('profileName').value = currentUser.displayName || '';
+            document.getElementById('profileEmail').value = currentUser.email || '';
+            document.getElementById('profileImage').src = currentUser.photoURL;
+            new bootstrap.Modal(document.getElementById('profileModal')).show();
+        }
+
+        // معالجة تغيير صورة الملف الشخصي
+        async function handleProfileImageChange(event) {
+            const file = event.target.files[0];
+            if (file) {
+                profileImageFile = file;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('profileImage').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // تحديث الملف الشخصي
+        async function updateProfile() {
+            const newName = document.getElementById('profileName').value;
+            let photoURL = currentUser.photoURL;
+
+            try {
+                // رفع الصورة الجديدة إذا تم اختيارها
+                if (profileImageFile) {
+                    const fileExtension = profileImageFile.name.split('.').pop();
+                    const storageRef = storage.ref();
+                    const imageRef = storageRef.child(`profile-images/${currentUser.uid}/profile.${fileExtension}`);
+                    await imageRef.put(profileImageFile);
+                    photoURL = await imageRef.getDownloadURL();
+                }
+
+                // تحديث معلومات المستخدم
+                await auth.currentUser.updateProfile({
+                    displayName: newName,
+                    photoURL: photoURL
+                });
+
+                // تحديث المتغيرات وواجهة المستخدم
+                currentUser.displayName = newName;
+                currentUser.photoURL = photoURL;
+                document.getElementById('headerUsername').textContent = newName;
+                document.getElementById('headerUserAvatar').src = photoURL;
+                document.getElementById('profileImage').src = photoURL;
+
+                // إعادة تعيين متغير الصورة
+                profileImageFile = null;
+
+                // إغلاق النافذة
+                bootstrap.Modal.getInstance(document.getElementById('profileModal')).hide();
+                alert('تم تحديث الملف الشخصي بنجاح');
+            } catch (error) {
+                alert('حدث خطأ أثناء تحديث الملف الشخصي: ' + error.message);
+            }
+        }
+
+        // تهيئة الصفحة
+        function initializeDefaultData() {
+            if (!localStorage.getItem('countries')) {
+                const defaultCountries = [
+                    {
+                        id: "sa-1",
+                        name: "المملكة العربية السعودية",
+                        image: "https://upload.wikimedia.org/wikipedia/commons/0/0d/Flag_of_Saudi_Arabia.svg",
+                        cities: [
+                            {
+                                id: "sa-riyadh",
+                                name: "الرياض",
+                                image: "https://www.arabianbusiness.com/cloud/2021/09/14/Riyadh-skyline.jpg"
+                            },
+                            {
+                                id: "sa-jeddah",
+                                name: "جدة",
+                                image: "https://cdn.al-ain.com/images/2021/1/22/140-231322-jeddah-saudi-arabia-tourism-travel_700x400.jpg"
+                            },
+                            {
+                                id: "sa-makkah",
+                                name: "مكة المكرمة",
+                                image: "https://upload.wikimedia.org/wikipedia/commons/c/c3/Masjid-al-Haram.jpg"
+                            }
+                        ]
+                    },
+                    {
+                        id: "ae-1",
+                        name: "الإمارات العربية المتحدة",
+                        image: "https://upload.wikimedia.org/wikipedia/commons/c/cb/Flag_of_the_United_Arab_Emirates.svg",
+                        cities: [
+                            {
+                                id: "ae-dubai",
+                                name: "دبي",
+                                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Dubai_Marina_Skyline.jpg/1280px-Dubai_Marina_Skyline.jpg"
+                            },
+                            {
+                                id: "ae-abudhabi",
+                                name: "أبو ظبي",
+                                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Sheikh_Zayed_Grand_Mosque.jpg/1280px-Sheikh_Zayed_Grand_Mosque.jpg"
+                            }
+                        ]
+                    },
+                    {
+                        id: "eg-1",
+                        name: "مصر",
+                        image: "https://upload.wikimedia.org/wikipedia/commons/f/fe/Flag_of_Egypt.svg",
+                        cities: [
+                            {
+                                id: "eg-cairo",
+                                name: "القاهرة",
+                                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/94/Cairo_Tower_2.jpg/1280px-Cairo_Tower_2.jpg"
+                            },
+                            {
+                                id: "eg-alex",
+                                name: "الإسكندرية",
+                                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Alexandria_-_Egypt.jpg/1280px-Alexandria_-_Egypt.jpg"
+                            },
+                            {
+                                id: "eg-luxor",
+                                name: "الأقصر",
+                                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Luxor_Temple.jpg/1280px-Luxor_Temple.jpg"
+                            }
+                        ]
+                    },
+                    {
+                        id: "tr-1",
+                        name: "تركيا",
+                        image: "https://upload.wikimedia.org/wikipedia/commons/b/b4/Flag_of_Turkey.svg",
+                        cities: [
+                            {
+                                id: "tr-istanbul",
+                                name: "إسطنبول",
+                                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Istanbul_skyline.jpg/1280px-Istanbul_skyline.jpg"
+                            },
+                            {
+                                id: "tr-antalya",
+                                name: "أنطاليا",
+                                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Antalya_Turkey.jpg/1280px-Antalya_Turkey.jpg"
+                            }
+                        ]
+                    },
+                    {
+                        id: "my-1",
+                        name: "ماليزيا",
+                        image: "https://upload.wikimedia.org/wikipedia/commons/6/66/Flag_of_Malaysia.svg",
+                        cities: [
+                            {
+                                id: "my-kl",
+                                name: "كوالالمبور",
+                                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Kuala_Lumpur_skyline_at_night_2.jpg/1280px-Kuala_Lumpur_skyline_at_night_2.jpg"
+                            },
+                            {
+                                id: "my-penang",
+                                name: "بينانج",
+                                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/George_Town%2C_Penang.jpg/1280px-George_Town%2C_Penang.jpg"
+                            }
+                        ]
+                    },
+                    {
+                        id: "uk-1",
+                        name: "المملكة المتحدة",
+                        image: "https://upload.wikimedia.org/wikipedia/commons/a/ae/Flag_of_the_United_Kingdom.svg",
+                        cities: [
+                            {
+                                id: "uk-london",
+                                name: "لندن",
+                                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/London_Montage_L.jpg/1280px-London_Montage_L.jpg"
+                            },
+                            {
+                                id: "uk-manchester",
+                                name: "مانشستر",
+                                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Manchester_Skyline.jpg/1280px-Manchester_Skyline.jpg"
+                            }
+                        ]
+                    }
+                ];
+
+                localStorage.setItem('countries', JSON.stringify(defaultCountries));
+                countries = defaultCountries;
+            }
+        }
+
+        initializeDefaultData();
+        loadData();
+    </script>
 </body>
 </html>
